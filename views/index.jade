@@ -1,2 +1,9 @@
-h1 title
-p Welcome to #{title}
+h1 SimPoll
+
+h3 Recent Polls
+ul
+  - each poll in recent_polls
+    li
+      a(href="/" + poll._id)= poll.question
+
+a(href="/new") New Poll

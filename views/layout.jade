@@ -1,6 +1,18 @@
 !!!
+
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body!= body
+    title SimPoll
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js")
+    script(src="/javascripts/coffee-script.js")
+    script(src="/javascripts/jquery.fittext.js")
+    script(src="/javascripts/socket.io.min.js")
+    script(src="/javascripts/application.js")
+
+  body
+    #container
+      p
+        a(href="/") SimPoll
+
+      != body

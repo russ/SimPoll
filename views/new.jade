@@ -1,0 +1,24 @@
+h1 Create Poll
+
+form(action="/create", method="post")
+  div
+    label(for="poll_question") Question
+    br
+    input(type="text", id="poll_question", name="poll[question]")
+
+  div
+    label Answer 1
+    br
+    input(type="text", name="poll[answers][]")
+
+  div
+    label Answer 2
+    br
+    input(type="text", name="poll[answers][]")
+
+  div
+    label Answer 3
+    br
+    input(type="text", name="poll[answers][]")
+
+  input(type="submit", value="Create Poll")
