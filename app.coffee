@@ -31,7 +31,7 @@ app.configure 'production', ->
   app.use(express.errorHandler())
 
 app.get '/', (req, res) ->
-  Poll.find {}, [ "question" ], { date: -1 }, (err, found) ->
+  Poll.find {}, [], { sort: [[ "date", -1 ]] }, (err, found) ->
     res.render 'index', { recent_polls: found }
 
 app.get '/new', (req, res) ->
@@ -45,16 +45,13 @@ app.post '/create', (req, res) ->
   poll.save ->
     res.redirect "/#{poll._id}"
 
+app.get "/:id.:format", (req, res) ->
+  Poll.findById req.params.id, (err, poll) ->
+    res.send poll.toJSON()
+ 
 app.get "/:id", (req, res) ->
   Poll.findById req.params.id, (err, poll) ->
     res.render "show", { poll: poll }
-
-# app.get "/vote/:poll_id/:answer_id", (req, res) ->
-#   Poll.findById req.params.poll_id, (err, poll) ->
-#     answer = poll.answers.id(req.params.answer_id)
-#     answer.number_of_votes = answer.number_of_votes += 1
-#     poll.save (err, answer) ->
-#       res.redirect "/#{poll._id}"
 
 app.listen(3000)
 console.log("Express server listening on port %d", app.address().port)
@@ -63,11 +60,9 @@ io = require "socket.io"
 socket = io.listen(app)
 socket.on "connection", (client) ->
   client.on "message", (message) ->
-    # sys.puts sys.inspect(message)
     Poll.findById message.poll_id, (err, poll) ->
       answer = poll.answers.id message.answer_id
       answer.number_of_votes = answer.number_of_votes += 1
       poll.save (err, poll) ->
-        sys.puts "sending"
         client.send poll
         client.broadcast poll

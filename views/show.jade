@@ -1,9 +1,9 @@
 h1= poll.question
 
 h2 Results
-ul#answers
-  - each answer in poll.answers
-    li
-      a(class="answer", data-poll_id=poll._id, data-answer_id=answer._id, href="/vote/" + poll.id + "/" + answer._id)= answer.answer
-      \ :
-      strong= answer.number_of_votes
+ul#answers(data-poll_id=poll._id)
+//  - each answer in poll.answers
+//    li
+//      a(class="answer", data-poll_id=poll._id, data-answer_id=answer._id, href="/vote/" + poll.id + "/" + answer._id)= answer.answer
+//      \ :
+//      strong= answer.number_of_votes

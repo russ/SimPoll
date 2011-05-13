@@ -1,26 +1,24 @@
+answers_template = "
+  {{#answers}}
+    <li><a class='answer' href='#' data-poll_id='{{poll_id}}' data-answer_id='{{_id}}'>{{answer}}</a> : <strong>{{number_of_votes}}</strong></li>
+  {{/answers}}"
+
 loadAnswers = (poll) ->
-  answers = ""
-  for answer in poll.answers
-    answers += "<li><a class='answer' href='/vote/" + poll._id + "/" + answer._id + "' data-poll_id='" + poll._id + "' data-answer_id='" + answer._id + "'>" + answer.answer + "</a> : <strong>" + answer.number_of_votes + "</strong></li>"
-  $("#answers").html(answers)
+  $("#answers").html(Mustache.to_html(answers_template, { poll_id: poll._id, answers: poll.answers }))
 
 $ ->
-  socket = new io.Socket null, { host: "192.168.1.167", port: 3000 }
+  socket = new io.Socket null, { port: 3000 }
   socket.connect()
-  socket.on "connect", ->
-    console.log "Connected to Server"
-
   socket.on "message", (message) ->
-    console.log message
     loadAnswers message
 
   $("h1, h2, p, ul").fitText()
 
+  if $("#answers")
+    $.getJSON "/" + $("#answers").data("poll_id") + ".json", (data) -> loadAnswers data
+
   $(".answer").live "click", (event) ->
     event.preventDefault()
-    # console.log event
-    # console.log $(@).data("poll_id")
-    # console.log $(@).data("answer_id")
     socket.send {
       poll_id: $(@).data "poll_id"
       answer_id: $(@).data "answer_id" }
