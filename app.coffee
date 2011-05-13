@@ -1,29 +1,41 @@
-sys: require 'sys'
+express = require "express"
+mongoose = require "mongoose"
+app = module.exports = express.createServer()
 
-get '/', ->
-  @render 'index.html.haml'
+Answers = new mongoose.Schema
+  answer: String
 
+Poll = new mongoose.Schema
+  question: String,
+  answers: [ Answers ],
+  date: { type: Date, default: Date.now }
 
-get '/*.js', (file) ->
-  try
-    @render "${file}.js.coffee", { layout: false }
-  catch e
-    @pass "/${file}.js"
+mongoose.model "Poll", Poll
 
-get '/*.css', (file) ->
-  try
-    @render "${file}.css.sass", { layout: false }
-  catch e
-    @pass "/${file}.css"
-    
-get '/*', (file) ->
-  try
-    @render "${file}.html.haml"
-  catch e
-    throw e if e.errno != 2
-    @pass "/${file}"
+db = mongoose.connect("mongodb://localhost/simpoll")
+ 
+app.configure ->
+  app.set('views', __dirname + '/views')
+  app.set('view engine', 'jade')
+  app.use(express.bodyParser())
+  app.use(express.methodOverride())
+  app.use(app.router)
+  app.use(express.static(__dirname + '/public'))
 
-get '/*', (file) ->
-  @pass "/public/${file}"
+app.configure 'development', ->
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
 
-server: run parseInt(process.env.PORT || 8000), null
+# 
+# app.configure('production', function(){
+#   app.use(express.errorHandler()); 
+# });
+# 
+# // Routes
+
+app.get '/', (req, res) ->
+  res.render 'index',
+    { title: 'Express' }
+
+if !module.parent
+  app.listen(3000)
+  console.log("Express server listening on port %d", app.address().port)
